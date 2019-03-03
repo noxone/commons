@@ -1,0 +1,7 @@
+This file
+should be read
+and the LinesReader
+ should
+ 	read
+five lines
+from it.
