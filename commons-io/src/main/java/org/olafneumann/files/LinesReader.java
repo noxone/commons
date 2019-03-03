@@ -22,6 +22,13 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+/**
+ * A reader that is able to collect multiple consecutive to one "item". It is
+ * also able to group lines depending on user defined basis.
+ *
+ * @author noxone
+ *
+ */
 public class LinesReader implements AutoCloseable {
 	private static final int BUFFER_SIZE = 1 * 1024 * 1024;// 1 MB
 
@@ -32,24 +39,42 @@ public class LinesReader implements AutoCloseable {
 
 	/**
 	 * Creates a new reader.
-	 * 
+	 *
 	 * @param reader a {@link BufferedReader} object providing the underlying
 	 *               stream.
 	 * @throws NullPointerException if <code>reader</code> is <code>null</code>
 	 */
-	public LinesReader(BufferedReader reader) {
+	public LinesReader(final BufferedReader reader) {
 		this.reader = Objects.requireNonNull(reader);
 	}
 
-	public LinesReader(InputStream in, Charset charset) {
+	/**
+	 * Creates a new reader.
+	 *
+	 * @param in      {@link InputStream} object providing the underlying stream
+	 * @param charset the charset to use for decoding
+	 */
+	public LinesReader(final InputStream in, final Charset charset) {
 		this(new BufferedReader(new InputStreamReader(in, charset.newDecoder()), BUFFER_SIZE));
 	}
 
-	public LinesReader(Path path, Charset charset) throws IOException {
+	/**
+	 * Creates a new reader.
+	 *
+	 * @param path    the file to read
+	 * @param charset the charset to use for decoding
+	 * @throws IOException if an I/O error occurs opening the file
+	 */
+	public LinesReader(final Path path, final Charset charset) throws IOException {
 		this(Files.newBufferedReader(path, charset));
 	}
 
-	public LinesReader(File file, Charset charset) throws IOException {
+	/**
+	 * @param file    the file to read
+	 * @param charset the charset to use for decoding
+	 * @throws IOException if an I/O error occurs opening the file
+	 */
+	public LinesReader(final File file, final Charset charset) throws IOException {
 		this(file.toPath(), charset);
 	}
 
@@ -57,27 +82,43 @@ public class LinesReader implements AutoCloseable {
 		return reader;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void close() throws IOException {
 		getBufferedReader().close();
 	}
 
+	/**
+	 * Stream the lines of the underlying reader
+	 *
+	 * @return a {@link Stream} of lines from the underlying reader
+	 */
 	public Stream<String> lines() {
 		return getBufferedReader().lines();
 	}
 
-	public Iterator<String> compoundLinesIterator(Predicate<String> appendToPreviousLine) {
+	/**
+	 * Iterate over the lines of the underlying reader concatenated by a user
+	 * defined {@link Predicate}.
+	 *
+	 * @param appendToPreviousLine
+	 * @return an {@link Iterator} of lines from the underlying reader concatenated
+	 *         by the denoted {@link Predicate}
+	 */
+	public Iterator<String> compoundLinesIterator(final Predicate<String> appendToPreviousLine) {
 		return new CompoundLinesIterator(getBufferedReader(), appendToPreviousLine);
 	}
 
-	private static class CompoundLinesIterator extends BufferingIterator<String> {
+	private static class CompoundLinesIterator extends AbstractIterator<String> {
 		private String currentLine = null;
+
 		private final List<String> lines = new ArrayList<>(1000);
 
 		private final BufferedReader reader;
+
 		private final Predicate<String> appendToPreviousLine;
 
-		private CompoundLinesIterator(BufferedReader reader, Predicate<String> appendToPreviousLine) {
+		private CompoundLinesIterator(final BufferedReader reader, final Predicate<String> appendToPreviousLine) {
 			this.reader = reader;
 			this.appendToPreviousLine = appendToPreviousLine;
 		}
@@ -119,7 +160,15 @@ public class LinesReader implements AutoCloseable {
 		}
 	}
 
-	public Stream<String> compoundLines(Predicate<String> appendToPreviousLine) {
+	/**
+	 * Stream the lines of the underlying reader concatenated by a user defined
+	 * {@link Predicate}.
+	 *
+	 * @param appendToPreviousLine
+	 * @return a {@link Stream} of lines from the underlying reader concatenated by
+	 *         the denoted {@link Predicate}
+	 */
+	public Stream<String> compoundLines(final Predicate<String> appendToPreviousLine) {
 		return StreamSupport.stream(//
 				// Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED |
 				// Spliterator.NONNULL)//
@@ -128,21 +177,37 @@ public class LinesReader implements AutoCloseable {
 				, true);
 	}
 
-	public <G> Iterator<List<String>> groupsIterator(Predicate<String> appendToPreviousLine,
-			Function<String, G> determineGroup, Function<String, LineType> determineEntryType) {
+	/**
+	 * Iterate over the concatenated lines of the underlying reader grouped by a
+	 * user defined {@link Predicate}.
+	 *
+	 * @param                      <G> the type of group identifier
+	 * @param appendToPreviousLine whether of not to concatenate the tested line
+	 *                             with the previous one
+	 * @param determineGroup       determine the group id of the tested line
+	 * @param determineEntryType   determine the type of the tested line
+	 * @return an {@link Iterator} of the concatenated lines of the underlying
+	 *         reader grouped by a user defined {@link Predicate}
+	 */
+	public <G> Iterator<List<String>> groupsIterator(final Predicate<String> appendToPreviousLine,
+			final Function<String, G> determineGroup,
+			final Function<String, LineType> determineEntryType) {
 		final Iterator<String> linesIterator = compoundLinesIterator(appendToPreviousLine);
 		return new GroupedIterator(linesIterator, determineGroup, determineEntryType);
 	}
 
-	private static class GroupedIterator extends BufferingIterator<List<String>> {
+	private static class GroupedIterator extends AbstractIterator<List<String>> {
 		private Map<Object, List<String>> groups = new LinkedHashMap<>();
 
 		private final Iterator<String> linesIterator;
+
 		private final Function<String, ?> determineGroup;
+
 		private final Function<String, LineType> determineEntryType;
 
-		private GroupedIterator(Iterator<String> linesIterator, Function<String, ?> determineGroup,
-				Function<String, LineType> determineEntryType) {
+		private GroupedIterator(final Iterator<String> linesIterator,
+				final Function<String, ?> determineGroup,
+				final Function<String, LineType> determineEntryType) {
 			this.linesIterator = linesIterator;
 			this.determineGroup = determineGroup;
 			this.determineEntryType = determineEntryType;
@@ -152,9 +217,9 @@ public class LinesReader implements AutoCloseable {
 		protected List<String> readItem() {
 			List<String> list = null;
 			while (linesIterator.hasNext() && list == null) {
-				String line = linesIterator.next();
-				Object groupId = determineGroup.apply(line);
-				LineType type = determineEntryType.apply(line);
+				final String line = linesIterator.next();
+				final Object groupId = determineGroup.apply(line);
+				final LineType type = determineEntryType.apply(line);
 
 				// the group
 				List<String> group = groups.get(groupId);
@@ -193,8 +258,21 @@ public class LinesReader implements AutoCloseable {
 		}
 	}
 
-	public <G> Stream<List<String>> groups(Predicate<String> appendToPreviousLine, Function<String, G> determineGroup,
-			Function<String, LineType> determineEntryType) {
+	/**
+	 * Stream the concatenated lines of the underlying reader grouped by a user
+	 * defined {@link Predicate}.
+	 *
+	 * @param                      <G> the type of group identifier
+	 * @param appendToPreviousLine whether of not to concatenate the tested line
+	 *                             with the previous one
+	 * @param determineGroup       determine the group id of the tested line
+	 * @param determineEntryType   determine the type of the tested line
+	 * @return a {@link Stream} of the concatenated lines of the underlying reader
+	 *         grouped by a user defined {@link Predicate}
+	 */
+	public <G> Stream<List<String>> groups(final Predicate<String> appendToPreviousLine,
+			final Function<String, G> determineGroup,
+			final Function<String, LineType> determineEntryType) {
 		return StreamSupport.stream(
 				Spliterators.spliterator(groupsIterator(appendToPreviousLine, determineGroup, determineEntryType), 100,
 						Spliterator.ORDERED | Spliterator.NONNULL),

@@ -15,42 +15,45 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+@SuppressWarnings("javadoc")
 public class LinesReaderTest {
 	private static final String FIVE_LINES_FILE = "fiveLines.txt";
+
 	private static final String TEST1_LOG_FILE = "test1.log";
+
 	private static final String TEST2_LOG_FILE = "test2.log";
 
 	private static LinesReader createLinesReaderFromResource(final String resourceName) throws IOException {
 		Path path;
 		try {
 			path = Paths.get(LinesReaderTest.class.getResource(resourceName).toURI());
-		} catch (URISyntaxException e) {
+		} catch (final URISyntaxException e) {
 			throw new RuntimeException("Invalid resource name", e);
 		}
 		return new LinesReader(path, StandardCharsets.UTF_8);
 	}
 
-	private static boolean startsWithWhitespace(String line) {
+	private static boolean startsWithWhitespace(final String line) {
 		if (line.length() > 0) {
-			char c = line.charAt(0);
+			final char c = line.charAt(0);
 			return c == ' ' || c == '\t' || c == '\r' || c == '\n' || c == '\f';
 		}
 		return false;
 	}
 
-	private static boolean isPartOfStackTrace(String line) {
+	private static boolean isPartOfStackTrace(final String line) {
 		return line.length() > 0 //
 				&& (Character.isWhitespace(line.charAt(0))//
 						|| line.startsWith("Caused by: "));
 	}
 
-	private static String getThreadName(String line) {
-		int start = line.indexOf("[") + 1;
-		int stop = line.indexOf("]");
-		if (start >= 0 && stop > start)
+	private static String getThreadName(final String line) {
+		final int start = line.indexOf("[") + 1;
+		final int stop = line.indexOf("]");
+		if (start >= 0 && stop > start) {
 			return line.substring(start, stop);
-		else
-			return null;
+		}
+		return null;
 	}
 
 	@BeforeClass
@@ -71,8 +74,8 @@ public class LinesReaderTest {
 		}
 
 		assertThat(lines.size()).isEqualTo(5);
-		String thirdLine = "and the LinesReader" + System.lineSeparator() + " should" + System.lineSeparator()
-				+ " 	read";
+		final String thirdLine
+				= "and the LinesReader" + System.lineSeparator() + " should" + System.lineSeparator() + " 	read";
 		assertThat(lines.get(2)).isEqualTo(thirdLine);
 	}
 
@@ -88,7 +91,7 @@ public class LinesReaderTest {
 
 	@Test
 	public void countGroupsWithMax30_713790() throws IOException {
-		AtomicInteger ai = new AtomicInteger(0);
+		final AtomicInteger ai = new AtomicInteger(0);
 		long count;
 		try (LinesReader reader = createLinesReaderFromResource(TEST2_LOG_FILE)) {
 			count = reader.groups(LinesReaderTest::startsWithWhitespace, LinesReaderTest::getThreadName, x -> {
@@ -126,8 +129,10 @@ public class LinesReaderTest {
 	public void speed_countGroupsWithBootstraps_713790() throws IOException {
 		long count;
 		try (LinesReader reader = createLinesReaderFromResource(TEST2_LOG_FILE)) {
-			count = reader.groups(LinesReaderTest::startsWithWhitespace, LinesReaderTest::getThreadName,
-					line -> line.endsWith("Bootstrapping Oversigt") ? LineType.Start : LineType.Normal).count();
+			count = reader
+					.groups(LinesReaderTest::startsWithWhitespace, LinesReaderTest::getThreadName,
+							line -> line.endsWith("Bootstrapping Oversigt") ? LineType.Start : LineType.Normal)
+					.count();
 		}
 
 		assertThat(count).isEqualTo(11915);
