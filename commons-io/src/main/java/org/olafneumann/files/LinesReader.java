@@ -9,8 +9,8 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -149,11 +149,8 @@ public class LinesReader implements AutoCloseable {
 				final int lineCount = lines.size();
 				if (lineCount == 1) {
 					return lines.get(0);
-				} else if (lineCount > 1) {
-					return String.join(System.lineSeparator(), lines);
-				} else {
-					return null;
 				}
+				return String.join(System.lineSeparator(), lines);
 			} finally {
 				lines.clear();
 			}
@@ -197,7 +194,7 @@ public class LinesReader implements AutoCloseable {
 	}
 
 	private static class GroupedIterator extends AbstractIterator<List<String>> {
-		private Map<Object, List<String>> groups = new LinkedHashMap<>();
+		private Map<Object, List<String>> groups = new HashMap<>();
 
 		private final Iterator<String> linesIterator;
 
@@ -215,38 +212,39 @@ public class LinesReader implements AutoCloseable {
 
 		@Override
 		protected List<String> readItem() {
-			List<String> list = null;
-			while (linesIterator.hasNext() && list == null) {
+			List<String> groupToBeReturned = null;
+			while (linesIterator.hasNext() && groupToBeReturned == null) {
 				final String line = linesIterator.next();
 				final Object groupId = determineGroup.apply(line);
 				final LineType type = determineEntryType.apply(line);
 
 				// the group
-				List<String> group = groups.get(groupId);
-				if (group == null) {
-					group = new LinkedList<>();
-					groups.put(groupId, group);
+				List<String> groupOfCurrentLine = groups.get(groupId);
+				if (groupOfCurrentLine == null) {
+					groupOfCurrentLine = new LinkedList<>();
+					groups.put(groupId, groupOfCurrentLine);
 				}
 
 				// handling
-				if (type == LineType.Normal) {
-					group.add(line);
+				if (type == LineType.Middle) {
+					groupOfCurrentLine.add(line);
 				} else if (type == LineType.Start) {
-					if (group.size() == 0) {
-						group.add(line);
+					if (groupOfCurrentLine.isEmpty()) {
+						groupOfCurrentLine.add(line);
 					} else {
-						group = new LinkedList<>();
-						group.add(line);
-						list = groups.put(groupId, group);
+						// implicit end
+						groupOfCurrentLine = new LinkedList<>();
+						groupOfCurrentLine.add(line);
+						groupToBeReturned = groups.put(groupId, groupOfCurrentLine);
 					}
 				} else if (type == LineType.End) {
-					group.add(line);
-					list = groups.put(groupId, new LinkedList<>());
+					groupOfCurrentLine.add(line);
+					groupToBeReturned = groups.remove(groupId);
 				} else {
 					throw new RuntimeException("Unkown entry type: " + type.name());
 				}
 			}
-			if (list == null) {
+			if (groupToBeReturned == null) {
 				return groups.entrySet()//
 						.stream()//
 						.filter(e -> !e.getValue().isEmpty())//
@@ -254,7 +252,7 @@ public class LinesReader implements AutoCloseable {
 						.map(e -> groups.remove(e.getKey()))//
 						.orElse(null);
 			}
-			return list;
+			return groupToBeReturned;
 		}
 	}
 

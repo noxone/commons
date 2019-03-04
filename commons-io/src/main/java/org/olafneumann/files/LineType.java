@@ -10,7 +10,7 @@ public enum LineType {
 	/** Defines the start of a group read by the {@link LinesReader} */
 	Start,
 	/** Defines a normal line read by the {@link LinesReader} */
-	Normal,
+	Middle,
 	/** Defines the end of a group read by the {@link LinesReader} */
 	End;
 }
