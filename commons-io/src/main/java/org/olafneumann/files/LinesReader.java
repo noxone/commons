@@ -212,47 +212,31 @@ public class LinesReader implements AutoCloseable {
 
 		@Override
 		protected List<String> readItem() {
-			List<String> groupToBeReturned = null;
-			while (linesIterator.hasNext() && groupToBeReturned == null) {
+			while (linesIterator.hasNext()) {
 				final String line = linesIterator.next();
 				final Object groupId = determineGroup.apply(line);
-				final LineType type = determineEntryType.apply(line);
+				final LineType lineType = determineEntryType.apply(line);
 
-				// the group
-				List<String> groupOfCurrentLine = groups.get(groupId);
-				if (groupOfCurrentLine == null) {
+				List<String> groupOfCurrentLine = groups
+						.computeIfAbsent(groupId, key -> new LinkedList<>());
+
+				if (lineType == LineType.End) {
+					groupOfCurrentLine.add(line);
+					return groups.remove(groupId);
+				}
+				if (lineType == LineType.Start
+						&& !groupOfCurrentLine.isEmpty()) {
 					groupOfCurrentLine = new LinkedList<>();
-					groups.put(groupId, groupOfCurrentLine);
+					groupOfCurrentLine.add(line);
+					return groups.put(groupId, groupOfCurrentLine);
 				}
 
-				// handling
-				if (type == LineType.Middle) {
-					groupOfCurrentLine.add(line);
-				} else if (type == LineType.Start) {
-					if (groupOfCurrentLine.isEmpty()) {
-						groupOfCurrentLine.add(line);
-					} else {
-						// implicit end
-						groupOfCurrentLine = new LinkedList<>();
-						groupOfCurrentLine.add(line);
-						groupToBeReturned = groups.put(groupId, groupOfCurrentLine);
-					}
-				} else if (type == LineType.End) {
-					groupOfCurrentLine.add(line);
-					groupToBeReturned = groups.remove(groupId);
-				} else {
-					throw new RuntimeException("Unkown entry type: " + type.name());
-				}
+				groupOfCurrentLine.add(line);
 			}
-			if (groupToBeReturned == null) {
-				return groups.entrySet()//
-						.stream()//
-						.filter(e -> !e.getValue().isEmpty())//
-						.findFirst()//
-						.map(e -> groups.remove(e.getKey()))//
-						.orElse(null);
-			}
-			return groupToBeReturned;
+
+			return groups//
+					.keySet().stream().findFirst().map(groups::remove)
+					.orElse(null);
 		}
 	}
 
