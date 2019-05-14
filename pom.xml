@@ -2906,6 +2906,7 @@ TODO: Easy to understand usage example
 	</distributionManagement>
 	<modules>
 		<module>commons-io</module>
+		<module>commons-fx</module>
 	</modules>
 </project>
 
