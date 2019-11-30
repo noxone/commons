@@ -2907,6 +2907,7 @@ TODO: Easy to understand usage example
 	<modules>
 		<module>commons-io</module>
 		<module>commons-fx</module>
+		<module>commos-image</module>
 	</modules>
 </project>
 
