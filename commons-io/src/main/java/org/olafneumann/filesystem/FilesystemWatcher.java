@@ -192,8 +192,10 @@ public class FilesystemWatcher implements FilesystemNotifier {
 
 		private final WatchService watchService = createWatchService();
 
+		@SuppressWarnings("resource")
 		private WatchService createWatchService() {
-			try (FileSystem fileSystem = FileSystems.getDefault()) {
+			final FileSystem fileSystem = FileSystems.getDefault();
+			try {
 				return fileSystem.newWatchService();
 			} catch (final IOException e) {
 				throw new UncheckedIOException(e);

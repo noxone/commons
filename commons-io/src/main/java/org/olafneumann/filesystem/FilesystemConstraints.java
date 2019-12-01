@@ -22,6 +22,10 @@ import javax.annotation.Nullable;
  * @see <a href=
  *      "https://github.com/filesystem-watcher/filesystem-watcher">github</a>
  */
+/**
+ * @author micro
+ *
+ */
 public class FilesystemConstraints implements Predicate<FilesystemEvent> {
 	/** TODO javadoc */
 	public enum FileType {
@@ -48,17 +52,17 @@ public class FilesystemConstraints implements Predicate<FilesystemEvent> {
 			Collections.emptyList(),
 			false);
 
-	private final List<String> filenameSubstrings;
+	private List<String> filenameSubstrings;
 
-	private final List<Pattern> filenamePatterns;
+	private List<Pattern> filenamePatterns;
 
-	private final List<FileType> fileTypes;
+	private List<FileType> fileTypes;
 
-	private final boolean isRecursive;
+	private boolean isRecursive;
 
 	/**
 	 * TODO javadoc
-	 * 
+	 *
 	 * @param filenameSubstrings
 	 * @param filenamePatterns
 	 * @param fileTypes
@@ -116,4 +120,47 @@ public class FilesystemConstraints implements Predicate<FilesystemEvent> {
 		return isRecursive;
 	}
 
+	/**
+	 * TODO javaodoc
+	 * 
+	 * @param filenamePatterns
+	 * @return
+	 */
+	FilesystemConstraints withFilenamePatterns(final List<Pattern> filenamePatterns) {
+		this.filenamePatterns = filenamePatterns;
+		return this;
+	}
+
+	/**
+	 * TODO javaodoc
+	 * 
+	 * @param filenameSubstrings
+	 * @return
+	 */
+	FilesystemConstraints withFilenameSubstrings(final List<String> filenameSubstrings) {
+		this.filenameSubstrings = filenameSubstrings;
+		return this;
+	}
+
+	/**
+	 * TODO javaodoc
+	 * 
+	 * @param fileTypes
+	 * @return
+	 */
+	FilesystemConstraints withFileTypes(final List<FileType> fileTypes) {
+		this.fileTypes = fileTypes;
+		return this;
+	}
+
+	/**
+	 * TODO javaodoc
+	 * 
+	 * @param isRecursive
+	 * @return
+	 */
+	FilesystemConstraints withRecursive(final boolean isRecursive) {
+		this.isRecursive = isRecursive;
+		return this;
+	}
 }

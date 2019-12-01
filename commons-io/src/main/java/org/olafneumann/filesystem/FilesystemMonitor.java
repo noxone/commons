@@ -110,23 +110,29 @@ public class FilesystemMonitor implements FilesystemNotifier {
 
 		/**
 		 * @param watchedPath the watchedPath to set
+		 * @return
 		 */
-		public void watchedPath(final Path watchedPath) {
+		public Builder watchedPath(final Path watchedPath) {
 			this.watchedPath = Optional.of(watchedPath);
+			return this;
 		}
 
 		/**
 		 * @param watchedConsumer the watchedConsumer to set
+		 * @return
 		 */
-		public void watchedConsumer(final Consumer<FilesystemEvent> watchedConsumer) {
+		public Builder watchedConsumer(final Consumer<FilesystemEvent> watchedConsumer) {
 			this.watchedConsumer = Optional.of(watchedConsumer);
+			return this;
 		}
 
 		/**
 		 * @param watchedConstraints the watchedConstraints to set
+		 * @return
 		 */
-		public void watchedConstraints(final FilesystemConstraints watchedConstraints) {
+		public Builder watchedConstraints(final FilesystemConstraints watchedConstraints) {
 			this.watchedConstraints = Objects.requireNonNull(watchedConstraints);
+			return this;
 		}
 	}
 }
