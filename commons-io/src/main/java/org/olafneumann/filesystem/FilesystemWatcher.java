@@ -18,7 +18,7 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.nio.file.Watchable;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -156,7 +156,7 @@ public class FilesystemWatcher implements FilesystemNotifier {
 
 				final Path path = event.getPath();
 				if (Files.isDirectory(path)) {
-					if (List.of(CREATED, INITIAL).contains(event.getEventType())) {
+					if (Arrays.asList(CREATED, INITIAL).contains(event.getEventType())) {
 						startWatching(path);
 						// TODO refactor
 						if (CREATED == event.getEventType()) {

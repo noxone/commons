@@ -2,6 +2,7 @@ package org.olafneumann.filesystem;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -71,14 +72,14 @@ class ConstraintsTest {
 		}
 
 		List<Path> getAll() {
-			return List.of(firstDirectory, secondDirectory, thirdDirectory, firstFile, secondFile, thirdFile, link,
-					recursive, firstRecursiveFile, secondRecursiveFile, firstRecursiveDirectory,
+			return Arrays.asList(firstDirectory, secondDirectory, thirdDirectory, firstFile, secondFile, thirdFile,
+					link, recursive, firstRecursiveFile, secondRecursiveFile, firstRecursiveDirectory,
 					secondRecursiveDirectory, recursiveLink);
 		}
 
 		List<Path> getAllNotRecursive() {
-			return List.of(firstFile, secondFile, thirdFile, firstDirectory, secondDirectory, thirdDirectory, recursive,
-					link);
+			return Arrays.asList(firstFile, secondFile, thirdFile, firstDirectory, secondDirectory, thirdDirectory,
+					recursive, link);
 		}
 	}
 
@@ -108,26 +109,31 @@ class ConstraintsTest {
 
 		return Stream.of(Arguments.of(FilesystemConstraints.DEFAULT, setup.getAllNotRecursive()),
 				Arguments.of(FilesystemConstraints.DEFAULT.withRecursive(true), setup.getAll()),
-				Arguments.of(FilesystemConstraints.DEFAULT.withFilenameSubstrings(List.of("first")),
-						List.of(setup.firstFile, setup.firstDirectory)),
-				Arguments.of(FilesystemConstraints.DEFAULT.withFilenamePatterns(List.of(Pattern.compile("^first.*"))),
-						List.of(setup.firstFile, setup.firstDirectory)),
-				Arguments.of(FilesystemConstraints.DEFAULT.withRecursive(true).withFilenameSubstrings(List.of("first")),
-						List.of(setup.firstFile, setup.firstDirectory, setup.firstRecursiveFile,
+				Arguments.of(FilesystemConstraints.DEFAULT.withFilenameSubstrings(Arrays.asList("first")),
+						Arrays.asList(setup.firstFile, setup.firstDirectory)),
+				Arguments.of(
+						FilesystemConstraints.DEFAULT.withFilenamePatterns(Arrays.asList(Pattern.compile("^first.*"))),
+						Arrays.asList(setup.firstFile, setup.firstDirectory)),
+				Arguments.of(
+						FilesystemConstraints.DEFAULT.withRecursive(true)
+								.withFilenameSubstrings(Arrays.asList("first")),
+						Arrays.asList(setup.firstFile, setup.firstDirectory, setup.firstRecursiveFile,
 								setup.firstRecursiveDirectory)),
 				Arguments.of(
 						FilesystemConstraints.DEFAULT.withRecursive(true)
-								.withFilenamePatterns(List.of(Pattern.compile("^first.*"))),
-						List.of(setup.firstFile, setup.firstDirectory, setup.firstRecursiveFile,
+								.withFilenamePatterns(Arrays.asList(Pattern.compile("^first.*"))),
+						Arrays.asList(setup.firstFile, setup.firstDirectory, setup.firstRecursiveFile,
 								setup.firstRecursiveDirectory)),
 				Arguments.of(
-						FilesystemConstraints.DEFAULT.withFileTypes(List.of(FilesystemConstraints.FileType.DIRECTORY)),
-						List.of(setup.firstDirectory, setup.secondDirectory, setup.thirdDirectory, setup.recursive)),
+						FilesystemConstraints.DEFAULT
+								.withFileTypes(Arrays.asList(FilesystemConstraints.FileType.DIRECTORY)),
+						Arrays.asList(setup.firstDirectory, setup.secondDirectory, setup.thirdDirectory,
+								setup.recursive)),
 				Arguments.of(
 						FilesystemConstraints.DEFAULT.withRecursive(true)
-								.withFileTypes(List.of(FilesystemConstraints.FileType.DIRECTORY)),
-						List.of(setup.firstDirectory, setup.secondDirectory, setup.thirdDirectory, setup.recursive,
-								setup.firstRecursiveDirectory, setup.secondRecursiveDirectory)));
+								.withFileTypes(Arrays.asList(FilesystemConstraints.FileType.DIRECTORY)),
+						Arrays.asList(setup.firstDirectory, setup.secondDirectory, setup.thirdDirectory,
+								setup.recursive, setup.firstRecursiveDirectory, setup.secondRecursiveDirectory)));
 	}
 
 }

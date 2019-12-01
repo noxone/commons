@@ -2,6 +2,8 @@ package org.olafneumann.filesystem;
 
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -20,9 +22,14 @@ public enum FilesystemEventType {
 	/** TODO javadoc */
 	MODIFIED;
 
-	private static final Map<WatchEvent.Kind<?>, FilesystemEventType> CORRESPONDING_WATCH_KINDS = Map.of(
-			StandardWatchEventKinds.ENTRY_CREATE, FilesystemEventType.CREATED, StandardWatchEventKinds.ENTRY_DELETE,
-			FilesystemEventType.DELETED, StandardWatchEventKinds.ENTRY_MODIFY, FilesystemEventType.MODIFIED);
+	private static final Map<WatchEvent.Kind<?>, FilesystemEventType> CORRESPONDING_WATCH_KINDS;
+	static {
+		final Map<WatchEvent.Kind<?>, FilesystemEventType> kinds = new LinkedHashMap<>();
+		kinds.put(StandardWatchEventKinds.ENTRY_CREATE, FilesystemEventType.CREATED);
+		kinds.put(StandardWatchEventKinds.ENTRY_DELETE, FilesystemEventType.DELETED);
+		kinds.put(StandardWatchEventKinds.ENTRY_MODIFY, FilesystemEventType.MODIFIED);
+		CORRESPONDING_WATCH_KINDS = Collections.unmodifiableMap(kinds);
+	}
 
 	/**
 	 * TODO javadoc
