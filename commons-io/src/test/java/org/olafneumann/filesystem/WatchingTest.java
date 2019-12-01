@@ -84,7 +84,7 @@ class WatchingTest {
 		// then
 		AwaitilityUtils.awaitForSize(receivedEvents, createdPaths.size());
 		final List<FilesystemEvent> createdEvents
-				= createdPaths.stream().map(path -> FilesystemEvent.of(path, CREATED)).collect(Collectors.toList());
+				= createdPaths.stream().map(path -> new FilesystemEvent(path, CREATED)).collect(Collectors.toList());
 		Assertions.assertThat(receivedEvents.values()).containsExactlyInAnyOrderElementsOf(createdEvents);
 	}
 
@@ -115,8 +115,8 @@ class WatchingTest {
 		// then
 		AwaitilityUtils.awaitForSize(receivedEvents, setup.getAllPaths().size() + 1);
 		final Stream<FilesystemEvent> initial
-				= setup.getAllPaths().stream().map(path -> FilesystemEvent.of(path, INITIAL));
-		final Stream<FilesystemEvent> modified = Stream.of(FilesystemEvent.of(setup.getSubjectPath(), DELETED));
+				= setup.getAllPaths().stream().map(path -> new FilesystemEvent(path, INITIAL));
+		final Stream<FilesystemEvent> modified = Stream.of(new FilesystemEvent(setup.getSubjectPath(), DELETED));
 		final List<FilesystemEvent> expected = Stream.concat(initial, modified).collect(Collectors.toList());
 		Assertions.assertThat(receivedEvents).containsExactlyInAnyOrderElementsOf(expected);
 	}
@@ -151,9 +151,9 @@ class WatchingTest {
 		// then
 		AwaitilityUtils.awaitForSize(receivedEvents, setup.getAllPaths().size() + 1);
 		final Stream<FilesystemEvent> initial
-				= setup.getAllPaths().stream().map(path -> FilesystemEvent.of(path, INITIAL));
+				= setup.getAllPaths().stream().map(path -> new FilesystemEvent(path, INITIAL));
 		final Stream<FilesystemEvent> modified
-				= Stream.of(FilesystemEvent.of(setup.getSubjectPath(), strategy.getExpectedEvent()));
+				= Stream.of(new FilesystemEvent(setup.getSubjectPath(), strategy.getExpectedEvent()));
 		final List<FilesystemEvent> expected = Stream.concat(initial, modified).collect(Collectors.toList());
 		Assertions.assertThat(receivedEvents).containsExactlyInAnyOrderElementsOf(expected);
 	}

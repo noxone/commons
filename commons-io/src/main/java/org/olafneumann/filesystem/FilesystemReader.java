@@ -114,7 +114,7 @@ public class FilesystemReader implements FilesystemNotifier {
 		}
 
 		private void addFilesystemEvent(final Path path) {
-			final FilesystemEvent filesystemEvent = FilesystemEvent.of(path, INITIAL);
+			final FilesystemEvent filesystemEvent = new FilesystemEvent(path, INITIAL);
 
 			if (constraints.test(filesystemEvent)) {
 				events.add(filesystemEvent);

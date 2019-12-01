@@ -36,13 +36,8 @@ public class FilesystemEvent {
 	 *
 	 * @param path
 	 * @param eventType
-	 * @return
 	 */
-	static FilesystemEvent of(final Path path, final FilesystemEventType eventType) {
-		return new FilesystemEvent(path, eventType);
-	}
-
-	private FilesystemEvent(final Path path, final FilesystemEventType eventType) {
+	FilesystemEvent(final Path path, final FilesystemEventType eventType) {
 		this.path = path;
 		this.eventType = eventType;
 	}

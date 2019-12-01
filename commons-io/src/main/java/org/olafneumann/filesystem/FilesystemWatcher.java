@@ -162,7 +162,7 @@ public class FilesystemWatcher implements FilesystemNotifier {
 						if (CREATED == event.getEventType()) {
 							new FilesystemReader(path, watchedConstraints, filesystemEvent -> {
 								if (!watchedKeys.containsKey(filesystemEvent.getPath())) {
-									watchedConsumer.accept(FilesystemEvent.of(filesystemEvent.getPath(), CREATED));
+									watchedConsumer.accept(new FilesystemEvent(filesystemEvent.getPath(), CREATED));
 								}
 							}).startWatching();
 						}

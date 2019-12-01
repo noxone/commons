@@ -97,7 +97,7 @@ class ConstraintsTest {
 		monitor.startWatching();
 
 		final List<FilesystemEvent> expectedEvents = expectedPaths.stream()
-				.map(path -> FilesystemEvent.of(path, FilesystemEventType.INITIAL))
+				.map(path -> new FilesystemEvent(path, FilesystemEventType.INITIAL))
 				.collect(Collectors.toList());
 		AwaitilityUtils.awaitForSize(receivedEvents, expectedEvents.size());
 		Assertions.assertThat(receivedEvents).containsExactlyInAnyOrderElementsOf(expectedEvents);
