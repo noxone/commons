@@ -5,5 +5,5 @@
     <artifactId>commons</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>commos-image</artifactId>
+  <artifactId>commons-image</artifactId>
 </project>
