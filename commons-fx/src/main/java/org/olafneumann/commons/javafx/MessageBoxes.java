@@ -21,11 +21,11 @@ import javafx.stage.Stage;
  *
  */
 abstract class MessageBoxes {
-	private static void enhance(final Stage owner, final Alert alert) {
-		if (owner != null) {
+	private static void enhance(final Optional<Stage> optionalOwner, final Alert alert) {
+		optionalOwner.ifPresent(owner -> {
 			((Stage) alert.getDialogPane().getScene().getWindow()).initOwner(owner);
 			((Stage) alert.getDialogPane().getScene().getWindow()).getIcons().addAll(owner.getIcons());
-		}
+		});
 	}
 
 	/**
@@ -35,8 +35,8 @@ abstract class MessageBoxes {
 	 * @param title
 	 * @param message
 	 */
-	public static void showMessageBoxOK(final Stage owner, final String title, final String message) {
-		showMessageBoxOK(owner, title, null, message);
+	public static void showMessageBoxOK(final Optional<Stage> owner, final String title, final String message) {
+		showMessageBoxOK(owner, title, Optional.empty(), message);
 	}
 
 	/**
@@ -47,13 +47,13 @@ abstract class MessageBoxes {
 	 * @param header
 	 * @param message
 	 */
-	public static void showMessageBoxOK(final Stage owner,
+	public static void showMessageBoxOK(final Optional<Stage> owner,
 			final String title,
-			final String header,
+			final Optional<String> header,
 			final String message) {
 		final Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setTitle(title);
-		alert.setHeaderText(header);
+		header.ifPresent(alert::setHeaderText);
 		alert.setContentText(message);
 		enhance(owner, alert);
 		alert.showAndWait();
@@ -66,8 +66,8 @@ abstract class MessageBoxes {
 	 * @param text
 	 * @return
 	 */
-	public static boolean showMessageBoxYesNo(final Stage owner, final String text) {
-		return showMessageBoxYesNo(owner, null, text);
+	public static boolean showMessageBoxYesNo(final Optional<Stage> owner, final String text) {
+		return showMessageBoxYesNo(owner, Optional.empty(), text);
 	}
 
 	/**
@@ -78,9 +78,11 @@ abstract class MessageBoxes {
 	 * @param text
 	 * @return
 	 */
-	public static boolean showMessageBoxYesNo(final Stage owner, final String header, final String text) {
+	public static boolean showMessageBoxYesNo(final Optional<Stage> owner,
+			final Optional<String> header,
+			final String text) {
 		final Alert alert = new Alert(AlertType.CONFIRMATION, text, ButtonType.NO, ButtonType.YES);
-		alert.setHeaderText(header);
+		header.ifPresent(alert::setHeaderText);
 		enhance(owner, alert);
 		return alert.showAndWait().get() == ButtonType.YES;
 	}
@@ -92,7 +94,7 @@ abstract class MessageBoxes {
 	 * @param text
 	 * @param throwable
 	 */
-	public static void showMessageBoxError(final Stage owner, final String text, final Throwable throwable) {
+	public static void showMessageBoxError(final Optional<Stage> owner, final String text, final Throwable throwable) {
 		showMessageBoxError(owner, text, throwable.getLocalizedMessage(), throwable);
 	}
 
@@ -104,7 +106,7 @@ abstract class MessageBoxes {
 	 * @param message
 	 * @param throwable
 	 */
-	public static void showMessageBoxError(final Stage owner,
+	public static void showMessageBoxError(final Optional<Stage> owner,
 			final String text,
 			final String message,
 			final Throwable throwable) {
@@ -143,7 +145,7 @@ abstract class MessageBoxes {
 
 	/**
 	 * TODO write javadoc
-	 * 
+	 *
 	 * @param title
 	 * @param header
 	 * @param input
