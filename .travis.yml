@@ -1,5 +1,9 @@
 language: java
 
+cache:
+  directories:
+    - $HOME/.m2
+    
 jdk:
   - openjdk8
   - openjdk11
@@ -7,10 +11,14 @@ jdk:
 before_install:
   - sudo apt update
   - sudo apt install openjfx
+  - echo $GPG_SECRET_KEYS | base64 --decode | $GPG_EXECUTABLE --import
+  - echo $GPG_OWNERTRUST | base64 --decode | $GPG_EXECUTABLE --import-ownertrust
+  
 
-install: skip
-script: mvn install -Dgpg.skip=true --batch-mode --show-version --update-snapshots
+before_deploy:
+  - mvn help:evaluate -N -Dexpression=project.version|grep -v '\['
+  - export project_version=$(mvn help:evaluate -N -Dexpression=project.version|grep -v '\[')
 
-cache:
-  directories:
-    - $HOME/.m2
+
+script: mvn install --batch-mode --show-version --update-snapshots
+

@@ -85,7 +85,7 @@ public abstract class AbstractWindowController {
 			final String title,
 			final StageStyle stageStyle,
 			final Modality modality) {
-		return FXWindowLoader.createWindow(controllerClass, getStage(), title, stageStyle, modality);
+		return FXMLWindowLoader.createWindow(controllerClass, getStage(), title, stageStyle, modality);
 	}
 
 	/**
@@ -96,7 +96,7 @@ public abstract class AbstractWindowController {
 	 */
 	protected Properties getProperties() {
 		final Properties properties = new Properties();
-		try (InputStream stream = getClass().getResourceAsStream(FXWindowLoader.getName(getClass()) + ".properties")) {
+		try (InputStream stream = getClass().getResourceAsStream(FXMLWindowLoader.getName(getClass()) + ".properties")) {
 			properties.load(stream);
 		} catch (@SuppressWarnings("unused") final IOException ignore) {
 			// do nothing

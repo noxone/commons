@@ -23,7 +23,7 @@ import javafx.stage.StageStyle;
  * @author Olaf Neumann
  *
  */
-public abstract class FXWindowLoader {
+public abstract class FXMLWindowLoader {
 	private static final String EXT_FXML = ".fxml";
 
 	/**
@@ -74,7 +74,7 @@ public abstract class FXWindowLoader {
 	 * @param iconProvider            a function that turns the size information
 	 *                                into an {@link InputStream} to read image data
 	 *                                from
-	 * @return
+	 * @return the controller instance controlling the newly created window
 	 */
 	public static <T> T load(final Stage stage,
 			final Supplier<InputStream> fxmlInputStreamProvider,
