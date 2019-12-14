@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.olafneumann.commons</groupId>
+	<groupId>org.olafneumann</groupId>
 	<artifactId>commons</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
@@ -2879,28 +2879,19 @@ TODO: Easy to understand usage example
 		</profile>
 	</profiles>
 
-	<repositories>
-		<repository>
-			<id>gwrp-snapshots</id>
-			<name>gwrp-snapshots</name>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<url>http://159.122.97.74:8081/artifactory/gwrp-snapshots/</url>
-		</repository>
-	</repositories>
-
 	<distributionManagement>
 		<repository>
-			<id>gwrp-snapshots</id>
-			<name>gwrp-snapshots</name>
-			<url>http://159.122.97.74:8081/artifactory/gwrp-snapshots/</url>
-			<layout>default</layout>
-			<uniqueVersion>true</uniqueVersion>
+			<id>oss-sonatype-releases</id>
+			<name>oss-sonatype-releases</name>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+			<uniqueVersion>false</uniqueVersion>
 		</repository>
+		<snapshotRepository>
+			<id>oss-sonatype-snapshots</id>
+			<name>oss-sonatype-snapshots</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
 	</distributionManagement>
 	<modules>
 		<module>commons-io</module>
