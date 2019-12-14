@@ -30,12 +30,12 @@ import java.util.stream.StreamSupport;
  *
  */
 public class LinesReader implements AutoCloseable {
-	private static final int BUFFER_SIZE = 1 * 1024 * 1024;// 1 MB
+	private static final int BUFFER_SIZE = 1 * 1024 * 1024; // 1 MB
 
 	/**
 	 * The underlying character-input stream.
 	 */
-	protected BufferedReader reader;
+	private BufferedReader reader;
 
 	/**
 	 * Creates a new reader.
@@ -101,7 +101,8 @@ public class LinesReader implements AutoCloseable {
 	 * Iterate over the lines of the underlying reader concatenated by a user
 	 * defined {@link Predicate}.
 	 *
-	 * @param appendToPreviousLine
+	 * @param appendToPreviousLine whether of not to concatenate the tested line
+	 *                             with the previous one
 	 * @return an {@link Iterator} of lines from the underlying reader concatenated
 	 *         by the denoted {@link Predicate}
 	 */
@@ -161,7 +162,8 @@ public class LinesReader implements AutoCloseable {
 	 * Stream the lines of the underlying reader concatenated by a user defined
 	 * {@link Predicate}.
 	 *
-	 * @param appendToPreviousLine
+	 * @param appendToPreviousLine whether of not to concatenate the tested line
+	 *                             with the previous one
 	 * @return a {@link Stream} of lines from the underlying reader concatenated by
 	 *         the denoted {@link Predicate}
 	 */
@@ -178,7 +180,7 @@ public class LinesReader implements AutoCloseable {
 	 * Iterate over the concatenated lines of the underlying reader grouped by a
 	 * user defined {@link Predicate}.
 	 *
-	 * @param                      <G> the type of group identifier
+	 * @param <G>                  the type of group identifier
 	 * @param appendToPreviousLine whether of not to concatenate the tested line
 	 *                             with the previous one
 	 * @param determineGroup       determine the group id of the tested line
@@ -217,15 +219,13 @@ public class LinesReader implements AutoCloseable {
 				final Object groupId = determineGroup.apply(line);
 				final LineType lineType = determineEntryType.apply(line);
 
-				List<String> groupOfCurrentLine = groups
-						.computeIfAbsent(groupId, key -> new LinkedList<>());
+				List<String> groupOfCurrentLine = groups.computeIfAbsent(groupId, key -> new LinkedList<>());
 
 				if (lineType == LineType.End) {
 					groupOfCurrentLine.add(line);
 					return groups.remove(groupId);
 				}
-				if (lineType == LineType.Start
-						&& !groupOfCurrentLine.isEmpty()) {
+				if (lineType == LineType.Start && !groupOfCurrentLine.isEmpty()) {
 					groupOfCurrentLine = new LinkedList<>();
 					groupOfCurrentLine.add(line);
 					return groups.put(groupId, groupOfCurrentLine);
@@ -235,7 +235,10 @@ public class LinesReader implements AutoCloseable {
 			}
 
 			return groups//
-					.keySet().stream().findFirst().map(groups::remove)
+					.keySet()
+					.stream()
+					.findFirst()
+					.map(groups::remove)
 					.orElse(null);
 		}
 	}
@@ -244,7 +247,7 @@ public class LinesReader implements AutoCloseable {
 	 * Stream the concatenated lines of the underlying reader grouped by a user
 	 * defined {@link Predicate}.
 	 *
-	 * @param                      <G> the type of group identifier
+	 * @param <G>                  the type of group identifier
 	 * @param appendToPreviousLine whether of not to concatenate the tested line
 	 *                             with the previous one
 	 * @param determineGroup       determine the group id of the tested line
