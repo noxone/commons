@@ -2,6 +2,7 @@ package org.olafneumann.commons.javafx;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,12 +14,16 @@ import javafx.stage.StageStyle;
 
 /**
  * A generic loader for JavaFX windows.
- * 
+ *
  * @author Olaf Neumann
  *
  */
 public abstract class FXWindowLoader {
 	private static final int[] ICON_SIZES = { 16, 24, 32, 40, 48, 64, 72, 96, 128, 256, 512 };
+
+	private static InputStream getResourceAsStream(final Class<?> relativClass, final String path) {
+		return relativClass.getClassLoader().getResourceAsStream(path);
+	}
 
 	/**
 	 * Generate a common name from the given class name. This name is expected to be
@@ -33,6 +38,12 @@ public abstract class FXWindowLoader {
 			name = name.substring(0, name.length() - "controller".length());
 		}
 		return name;
+	}
+
+	private static <T> String getNameWithPath(final Class<T> controllerClass) {
+		final String name = getName(controllerClass);
+		final String path = controllerClass.getPackage().getName() + "/";
+		return path + name;
 	}
 
 	/**
@@ -56,19 +67,10 @@ public abstract class FXWindowLoader {
 	 * @return the newly create controller instance
 	 */
 	protected static <T> T load(final Class<T> controllerClass, final Stage stage) {
-		// Prepare our knowledge about the window
-		final String name = getName(controllerClass);
-		final String path = controllerClass.getPackage().getName() + "/";
-		final String filename = path + name + ".fxml";
-
 		// Load window information
 		final FXMLLoader loader = new FXMLLoader();
 		Parent root;
-		try (InputStream stream = getResourceAsStream(controllerClass, filename)) {
-			if (stream == null) {
-				throw new RuntimeException(
-						"Cannot find FXML file for " + controllerClass.getName() + ". Expected file name: " + filename);
-			}
+		try (InputStream stream = getFxmlInputStream(controllerClass, getNameWithPath(controllerClass) + ".fxml")) {
 			root = loader.load(stream);
 		} catch (final IOException e) {
 			throw new RuntimeException("Unable to load window for " + controllerClass.getName(), e);
@@ -79,24 +81,42 @@ public abstract class FXWindowLoader {
 		stage.setScene(scene);
 		final T controller = loader.getController();
 		if (controller instanceof AbstractWindowController) {
-			final AbstractWindowController atc = (AbstractWindowController) controller;
-			atc.setStage(stage);
-			stage.setOnShowing(atc::onShowing);
-			stage.setOnShown(atc::onShown);
-			stage.setOnCloseRequest(atc::onCloseRequest);
-			stage.setOnHiding(atc::onHiding);
-			stage.setOnHidden(atc::onHidden);
+			initAbstractWindowController((AbstractWindowController) controller, stage);
 		}
 
-		// Maybe make the window beautiful
-		for (final int size : ICON_SIZES) {
-			addIcon(controllerClass, stage, path + name + "_" + size + ".png");
-		}
+		addIcons(controllerClass, stage, getNameWithPath(controllerClass) + "_%s.png");
 		return controller;
 	}
 
-	private static InputStream getResourceAsStream(final Class<?> relativClass, final String path) {
-		return relativClass.getClassLoader().getResourceAsStream(path);
+	private static <T> InputStream getFxmlInputStream(final Class<T> controllerClass, final String filename) {
+		return Objects.requireNonNull(getResourceAsStream(controllerClass, filename),
+				"Cannot find FXML file for " + controllerClass.getName() + ". Expected file name: " + filename);
+	}
+
+	private static void initAbstractWindowController(final AbstractWindowController atc, final Stage stage) {
+		atc.setStage(stage);
+		stage.setOnShowing(atc::onShowing);
+		stage.setOnShown(atc::onShown);
+		stage.setOnCloseRequest(atc::onCloseRequest);
+		stage.setOnHiding(atc::onHiding);
+		stage.setOnHidden(atc::onHidden);
+	}
+
+	/**
+	 * Add icons the given window based on the given filename format
+	 *
+	 * @param <T>             the type of the controller's class
+	 * @param controllerClass the controller class
+	 * @param stage           the window to add the icons to
+	 * @param filenameFormat  a format to be used to generate icon filenames. This
+	 *                        will be used with
+	 *                        {@link String#format(String, Object...)} to insert an
+	 *                        integer value. Example: <code>icon_%s.png</code>
+	 */
+	public static <T> void addIcons(final Class<T> controllerClass, final Stage stage, final String filenameFormat) {
+		for (final int size : ICON_SIZES) {
+			addIcon(controllerClass, stage, String.format(filenameFormat, size));
+		}
 	}
 
 	private static void addIcon(final Class<?> relativClass, final Stage stage, final String path) {
