@@ -5,6 +5,8 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.util.Set;
 import java.util.function.Function;
 
+import javax.annotation.Nullable;
+
 import org.olafneumann.filesystem.FilesystemEventType;
 import org.olafneumann.filesystem.utilities.FilesystemUtils;
 
@@ -28,7 +30,7 @@ public enum ModificationKind implements Function<Path, Path> {
 	}
 
 	@Override
-	public Path apply(final Path path) {
+	public Path apply(final @Nullable Path path) {
 		return fileModifier.apply(path);
 	}
 

@@ -11,6 +11,7 @@ import java.util.function.Supplier;
 @SuppressWarnings("javadoc")
 public class FilesystemUtils {
 
+	@SuppressWarnings("unused")
 	private final Path temporaryFolder;
 
 	public FilesystemUtils(final Path temporaryFolder) {

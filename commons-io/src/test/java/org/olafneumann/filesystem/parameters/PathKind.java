@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
+import javax.annotation.Nullable;
+
 import org.olafneumann.filesystem.utilities.FilesystemUtils;
 
 @SuppressWarnings("javadoc")
@@ -47,7 +49,7 @@ public enum PathKind implements Function<Path, PathKind.PathScenario> {
 	private final Function<Path, PathScenario> allPathsSupplier;
 
 	@Override
-	public PathScenario apply(final Path path) {
+	public PathScenario apply(final @Nullable Path path) {
 		return allPathsSupplier.apply(path);
 	}
 
