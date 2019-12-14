@@ -4,6 +4,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Optional;
 
+import javax.annotation.Nullable;
+
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
@@ -29,23 +31,23 @@ abstract class MessageBoxes {
 	}
 
 	/**
-	 * TODO write javadoc
+	 * Show a simple text message box with an OK button.
 	 *
-	 * @param owner
-	 * @param title
-	 * @param message
+	 * @param owner   the owner window of the message box
+	 * @param title   the text to be shown as the title
+	 * @param message the text to be shown as the main message.
 	 */
 	public static void showMessageBoxOK(final Optional<Stage> owner, final String title, final String message) {
 		showMessageBoxOK(owner, title, Optional.empty(), message);
 	}
 
 	/**
-	 * TODO write javadoc
+	 * Show a simple text message box with an OK button.
 	 *
-	 * @param owner
-	 * @param title
-	 * @param header
-	 * @param message
+	 * @param owner   the owner window of the message box
+	 * @param title   the text to be shown as the title
+	 * @param header  text to be shown as a header above the main message
+	 * @param message the text to be shown as the main message.
 	 */
 	public static void showMessageBoxOK(final Optional<Stage> owner,
 			final String title,
@@ -60,23 +62,23 @@ abstract class MessageBoxes {
 	}
 
 	/**
-	 * TODO write javadoc
+	 * Show a message box with two buttons: YES and NO
 	 *
-	 * @param owner
-	 * @param text
-	 * @return
+	 * @param owner the owner window of the message box
+	 * @param text  the question to be displayed to the user
+	 * @return <code>true</code> if the user chose <code>YES</code>
 	 */
 	public static boolean showMessageBoxYesNo(final Optional<Stage> owner, final String text) {
 		return showMessageBoxYesNo(owner, Optional.empty(), text);
 	}
 
 	/**
-	 * TODO write javadoc
+	 * Show a message box with two buttons: YES and NO
 	 *
-	 * @param owner
-	 * @param header
-	 * @param text
-	 * @return
+	 * @param owner  the owner window of the message box
+	 * @param header text to be shown as a header above the main message
+	 * @param text   the question to be displayed to the user
+	 * @return <code>true</code> if the user chose <code>YES</code>
 	 */
 	public static boolean showMessageBoxYesNo(final Optional<Stage> owner,
 			final Optional<String> header,
@@ -88,23 +90,23 @@ abstract class MessageBoxes {
 	}
 
 	/**
-	 * TODO write javadoc
+	 * Show an error message to the user.
 	 *
-	 * @param owner
-	 * @param text
-	 * @param throwable
+	 * @param owner     the owner window of the message box
+	 * @param text      the error message to be displayed to the user
+	 * @param throwable the exception to be displayed to the user
 	 */
 	public static void showMessageBoxError(final Optional<Stage> owner, final String text, final Throwable throwable) {
 		showMessageBoxError(owner, text, throwable.getLocalizedMessage(), throwable);
 	}
 
 	/**
-	 * TODO write javadoc
+	 * Show an error message to the user.
 	 *
-	 * @param owner
-	 * @param text
-	 * @param message
-	 * @param throwable
+	 * @param owner     the owner window of the message box
+	 * @param text      the error message to be displayed to the user
+	 * @param message   an additional message describing the error
+	 * @param throwable the exception to be displayed to the user
 	 */
 	public static void showMessageBoxError(final Optional<Stage> owner,
 			final String text,
@@ -144,18 +146,18 @@ abstract class MessageBoxes {
 	}
 
 	/**
-	 * TODO write javadoc
+	 * Show a box to the user asking for string input
 	 *
-	 * @param title
-	 * @param header
-	 * @param input
-	 * @param defaultValue
+	 * @param title        the text to be shown as the title
+	 * @param header       text to be shown as a header above the main message
+	 * @param input        Text asking for input
+	 * @param defaultValue the default value to be used if the user presses CANCEL
 	 * @return
 	 */
 	public static Optional<String> showMessageBoxInput(final String title,
 			final String header,
 			final String input,
-			final String defaultValue) {
+			@Nullable final String defaultValue) {
 		final TextInputDialog dialog = new TextInputDialog(defaultValue);
 		dialog.setTitle(title);
 		dialog.setHeaderText(header);
