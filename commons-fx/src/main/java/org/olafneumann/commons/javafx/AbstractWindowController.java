@@ -20,39 +20,6 @@ import javafx.stage.WindowEvent;
  *
  */
 public abstract class AbstractWindowController {
-	/**
-	 * Create a child window to the current window
-	 *
-	 * @param <T>             The type of the window's controller
-	 * @param controllerClass the controller class to attach to the window
-	 * @param title           the text to be shown as the window's title
-	 * @param stageStyle      defines the type of window to show
-	 * @param modality        defines the window's modality
-	 * @return the instance of the window's controller
-	 */
-	protected <T> T createWindow(final Class<T> controllerClass,
-			final String title,
-			final StageStyle stageStyle,
-			final Modality modality) {
-		return FXWindowLoader.createWindow(controllerClass, getStage(), title, stageStyle, modality);
-	}
-
-	/**
-	 * Returns a property object that is extracted from a property file named ofter
-	 * the controller class.
-	 *
-	 * @return the properties loaded.
-	 */
-	protected Properties getProperties() {
-		final Properties properties = new Properties();
-		try (InputStream stream = getClass().getResourceAsStream(FXWindowLoader.getName(getClass()) + ".properties")) {
-			properties.load(stream);
-		} catch (@SuppressWarnings("unused") final IOException ignore) {
-			// do nothing
-		}
-		return properties;
-	}
-
 	private Stage stage;
 
 	private HostServices hostServices;
@@ -102,6 +69,39 @@ public abstract class AbstractWindowController {
 	 */
 	protected void openFile(final URI uri) {
 		getHostServices().showDocument(uri.toString());
+	}
+
+	/**
+	 * Create a child window to the current window
+	 *
+	 * @param <T>             The type of the window's controller
+	 * @param controllerClass the controller class to attach to the window
+	 * @param title           the text to be shown as the window's title
+	 * @param stageStyle      defines the type of window to show
+	 * @param modality        defines the window's modality
+	 * @return the instance of the window's controller
+	 */
+	protected <T> T createWindow(final Class<T> controllerClass,
+			final String title,
+			final StageStyle stageStyle,
+			final Modality modality) {
+		return FXWindowLoader.createWindow(controllerClass, getStage(), title, stageStyle, modality);
+	}
+
+	/**
+	 * Returns a property object that is extracted from a property file named ofter
+	 * the controller class.
+	 *
+	 * @return the properties loaded.
+	 */
+	protected Properties getProperties() {
+		final Properties properties = new Properties();
+		try (InputStream stream = getClass().getResourceAsStream(FXWindowLoader.getName(getClass()) + ".properties")) {
+			properties.load(stream);
+		} catch (@SuppressWarnings("unused") final IOException ignore) {
+			// do nothing
+		}
+		return properties;
 	}
 
 	/**
