@@ -1038,6 +1038,10 @@ TODO: Easy to understand usage example
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
+				<configuration>
+					<passphrase>${env.GPG_PASSPHRASE}</passphrase>
+					<useAgent>false</useAgent>
+				</configuration>
 				<executions>
 					<execution>
 						<id>sign-artifacts</id>
@@ -2907,6 +2911,7 @@ TODO: Easy to understand usage example
 						<version>1.6</version>
 						<configuration>
 							<passphrase>${env.GPG_PASSPHRASE}</passphrase>
+							<useAgent>false</useAgent>
 						</configuration>
 						<executions>
 							<execution>
