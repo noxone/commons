@@ -9,10 +9,6 @@
 	<version>1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<!-- The following lines are commented out to avoid Maven from passing them 
-		through to depending projects, that might be distributed by someone else 
-		or licensed differently. -->
-
 	<developers>
 		<developer>
 			<name>Olaf Neumann</name>
@@ -31,16 +27,6 @@
 			a default main class, e.g. "de.larssh.Main". -->
 		<project.build.mainClass></project.build.mainClass>
 
-		<!-- "project.build.packageDependenciesPhase" is meant to be used by child 
-			POMs to configure if an archive containing dependencies should be created. 
-			Values can be "none" (disabled) and "package" (enabled) as this property 
-			is used with the <phase> tag. -->
-		<project.build.packageDependenciesPhase>none</project.build.packageDependenciesPhase>
-
-		<!-- "spotbugs.excludeFilterFile" is meant to be used by child POMs to 
-			configure a SpotBugs excludes file. -->
-		<!-- <spotbugs.excludeFilterFile>${project.basedir}/spotbugs-exclude.xml</spotbugs.excludeFilterFile> -->
-
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
@@ -50,26 +36,16 @@
 
 		<junit.version>5.5.2</junit.version>
 		<junit.platform.version>1.5.2</junit.platform.version>
-		<pmd.version>6.8.0</pmd.version>
+		<pmd.version>6.20.0</pmd.version>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
 			<!-- Compile -->
 			<dependency>
-				<groupId>args4j</groupId>
-				<artifactId>args4j</artifactId>
-				<version>2.33</version>
-			</dependency>
-			<dependency>
 				<groupId>com.google.code.findbugs</groupId>
 				<artifactId>jsr305</artifactId>
 				<version>3.0.2</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-				<version>26.0-jre</version>
 			</dependency>
 
 			<!-- Test -->
@@ -86,6 +62,18 @@
 				<scope>test</scope>
 			</dependency>
 			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-params</artifactId>
+				<version>${junit.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.junit.platform</groupId>
+				<artifactId>junit-platform-launcher</artifactId>
+				<version>${junit.platform.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
 				<groupId>org.junit.platform</groupId>
 				<artifactId>junit-platform-runner</artifactId>
 				<version>${junit.platform.version}</version>
@@ -94,19 +82,19 @@
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
-				<version>2.23.0</version>
+				<version>3.2.0</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-junit-jupiter</artifactId>
-				<version>2.23.0</version>
+				<version>3.2.0</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.assertj</groupId>
 				<artifactId>assertj-core</artifactId>
-				<version>3.12.0</version>
+				<version>3.14.0</version>
 				<scope>test</scope>
 			</dependency>
 		</dependencies>
@@ -118,18 +106,11 @@
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>jsr305</artifactId>
 		</dependency>
-		<!-- Dependency to dismiss the SLF4j warning -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-nop</artifactId>
-			<version>1.6.3</version>
-		</dependency>
 
 		<!-- Test -->
 		<dependency>
 			<groupId>org.junit.platform</groupId>
 			<artifactId>junit-platform-launcher</artifactId>
-			<version>1.5.2</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -248,6 +229,19 @@
 				<plugin>
 					<artifactId>maven-gpg-plugin</artifactId>
 					<version>1.6</version>
+					<configuration>
+						<passphrase>${env.GPG_PASSPHRASE}</passphrase>
+						<useAgent>false</useAgent>
+					</configuration>
+					<executions>
+						<execution>
+							<id>sign-artifacts</id>
+							<phase>verify</phase>
+							<goals>
+								<goal>sign</goal>
+							</goals>
+						</execution>
+					</executions>
 				</plugin>
 				<plugin>
 					<artifactId>maven-pmd-plugin</artifactId>
@@ -379,45 +373,234 @@
 							<target>
 								<echo message="Update ${project.basedir}/.gitignore" />
 								<echo file="${project.basedir}/.gitignore"><![CDATA[# leave all classpath and project handling to Maven 
-# ==> do not checkin Eclipse .project and .classpath files
-.project
-.classpath
+
+# Created by https://www.gitignore.io/api/java,macos,maven,eclipse,intellij
+# Edit at https://www.gitignore.io/?templates=java,macos,maven,eclipse,intellij
+
+### Eclipse ###
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# PyDev specific (Python IDE for Eclipse)
+*.pydevproject
+
+# CDT-specific (C/C++ Development Tooling)
+.cproject
+
+# CDT- autotools
+.autotools
+
+# Java annotation processor (APT)
 .factorypath
-.externalToolBuilders
-/.checkstyle
 
-# leave all Eclipse settings locally
-# Users must checkin a settings file explicitly to share it's content via version control
-# e.g. org.eclipse.jdt.ui.prefs, org.eclipse.jdt.core.prefs
-/.settings/
+# PDT-specific (PHP Development Tools)
+.buildpath
 
-# do not checkin build tool specific files
-.mvn
-.gradle
+# sbteclipse plugin
+.target
 
-# do not check-in generated java sources
-*_.java
+# Tern plugin
+.tern-project
+
+# TeXlipse plugin
+.texlipse
+
+# STS (Spring Tool Suite)
+.springBeans
+
+# Code Recommenders
+.recommenders/
+
+# Annotation Processing
+.apt_generated/
+
+# Scala IDE specific (Scala & Java development for Eclipse)
+.cache-main
+.scala_dependencies
+.worksheet
+
+### Eclipse Patch ###
+# Eclipse Core
+.project
+
+# JDT-specific (Eclipse Java Development Tools)
+.classpath
+
+# Annotation Processing
 .apt_generated
 
-# do not check-in binaries
-target/
-build/
-bin/
+.sts4-cache/
+
+### Intellij ###
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm
+# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
+
+# User-specific stuff
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+
+# Generated files
+.idea/**/contentModel.xml
+
+# Sensitive or high-churn files
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+.idea/**/dbnavigator.xml
+
+# Gradle
+.idea/**/gradle.xml
+.idea/**/libraries
+
+# Gradle and Maven with auto-import
+# When using Gradle or Maven with auto-import, you should exclude module files,
+# since they will be recreated, and may cause churn.  Uncomment if using
+# auto-import.
+# .idea/modules.xml
+# .idea/*.iml
+# .idea/modules
+# *.iml
+# *.ipr
+
+# CMake
+cmake-build-*/
+
+# Mongo Explorer plugin
+.idea/**/mongoSettings.xml
+
+# File-based project format
+*.iws
+
+# IntelliJ
+out/
+
+# mpeltonen/sbt-idea plugin
+.idea_modules/
+
+# JIRA plugin
+atlassian-ide-plugin.xml
+
+# Cursive Clojure plugin
+.idea/replstate.xml
+
+# Crashlytics plugin (for Android Studio and IntelliJ)
+com_crashlytics_export_strings.xml
+crashlytics.properties
+crashlytics-build.properties
+fabric.properties
+
+# Editor-based Rest Client
+.idea/httpRequests
+
+# Android studio 3.1+ serialized cache file
+.idea/caches/build_file_checksums.ser
+
+### Intellij Patch ###
+# Comment Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-215987721
+
+# *.iml
+# modules.xml
+# .idea/misc.xml
+# *.ipr
+
+# Sonarlint plugin
+.idea/**/sonarlint/
+
+# SonarQube Plugin
+.idea/**/sonarIssues.xml
+
+# Markdown Navigator plugin
+.idea/**/markdown-navigator.xml
+.idea/**/markdown-navigator/
+
+### Java ###
+# Compiled class file
 *.class
-*.jar
 
-# do not check-in generated web deployment descriptors
-*/WebContent/WEB-INF/web.xml
-*/src/main/webapp/META-INF/MANIFEST.MF
-
-# do not check-in other generated files
-rebel.xml
-
-# clearcase migration
-.copyarea.db
-
-# log files
+# Log file
 *.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+### macOS ###
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+### Maven ###
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+.flattened-pom.xml
+
+# End of https://www.gitignore.io/api/java,macos,maven,eclipse,intellij
 ]]></echo>
 							</target>
 						</configuration>
@@ -967,11 +1150,22 @@ TODO: Easy to understand usage example
 			</plugin>
 
 			<!-- Check code style -->
-			<!-- <plugin> <artifactId>maven-checkstyle-plugin</artifactId> <executions> 
-				<execution> <phase>test</phase> <goals> <goal>check</goal> </goals> <configuration> 
-				<configLocation>${project.build.directory}/checkstyle.xml</configLocation> 
-				<consoleOutput>true</consoleOutput> <includeTestSourceDirectory>true</includeTestSourceDirectory> 
-				</configuration> </execution> </executions> </plugin> -->
+			<!-- <plugin>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>test</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+							<configLocation>${project.build.directory}/checkstyle.xml</configLocation>
+							<consoleOutput>true</consoleOutput>
+							<includeTestSourceDirectory>true</includeTestSourceDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin> -->
 
 			<!-- JAR creation -->
 			<plugin>
@@ -1034,29 +1228,7 @@ TODO: Easy to understand usage example
 				</executions>
 			</plugin>
 
-			<!-- sign output -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<configuration>
-					<passphrase>${env.GPG_PASSPHRASE}</passphrase>
-					<useAgent>false</useAgent>
-				</configuration>
-				<executions>
-					<execution>
-						<id>sign-artifacts</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
-
-		<!-- <extensions> <extension> <groupId>org.apache.maven.wagon</groupId> 
-			<artifactId>wagon-ftp</artifactId> <version>3.3.2</version> </extension> 
-			</extensions> -->
 	</build>
 
 	<reporting>
@@ -2904,24 +3076,28 @@ TODO: Easy to understand usage example
 
 			<build>
 				<plugins>
-					<!-- To sign the artifacts -->
+					<!-- Sign the artifacts -->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
-						<version>1.6</version>
-						<configuration>
-							<passphrase>${env.GPG_PASSPHRASE}</passphrase>
-							<useAgent>false</useAgent>
-						</configuration>
-						<executions>
-							<execution>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
-								<goals>
-									<goal>sign</goal>
-								</goals>
-							</execution>
-						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>snapshot</id>
+			<activation>
+				<property>
+					<name>snapshot</name>
+				</property>
+			</activation>
+
+			<build>
+				<plugins>
+					<!-- Sign the artifacts -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
 					</plugin>
 				</plugins>
 			</build>

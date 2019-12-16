@@ -30,12 +30,12 @@ import java.util.stream.StreamSupport;
  *
  */
 public class LinesReader implements AutoCloseable {
-	private static final int BUFFER_SIZE = 1 * 1024 * 1024;// 1 MB
+	private static final int BUFFER_SIZE = 1 * 1024 * 1024; // 1 MB
 
 	/**
 	 * The underlying character-input stream.
 	 */
-	protected BufferedReader reader;
+	private BufferedReader reader;
 
 	/**
 	 * Creates a new reader.
