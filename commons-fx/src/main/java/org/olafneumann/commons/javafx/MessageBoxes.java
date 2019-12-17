@@ -22,7 +22,7 @@ import javafx.stage.Stage;
  * @author Olaf Neumann
  *
  */
-abstract class MessageBoxes {
+public final class MessageBoxes {
 	private static void enhance(final Optional<Stage> optionalOwner, final Alert alert) {
 		optionalOwner.ifPresent(owner -> {
 			((Stage) alert.getDialogPane().getScene().getWindow()).initOwner(owner);
@@ -163,5 +163,9 @@ abstract class MessageBoxes {
 		dialog.setHeaderText(header);
 		dialog.setContentText(input);
 		return dialog.showAndWait();
+	}
+
+	private MessageBoxes() {
+		throw new RuntimeException();
 	}
 }
