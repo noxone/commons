@@ -96,7 +96,8 @@ public abstract class AbstractWindowController {
 	 */
 	protected Properties getProperties() {
 		final Properties properties = new Properties();
-		try (InputStream stream = getClass().getResourceAsStream(FXMLWindowLoader.getName(getClass()) + ".properties")) {
+		try (InputStream stream
+				= getClass().getResourceAsStream(FXMLWindowLoader.getName(getClass()) + ".properties")) {
 			properties.load(stream);
 		} catch (@SuppressWarnings("unused") final IOException ignore) {
 			// do nothing
