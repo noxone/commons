@@ -31,6 +31,20 @@ public final class MessageBoxes {
 	}
 
 	/**
+	 * Display a customized {@link Alert} and wait until the user closes it. This
+	 * method replaces the buttons displayed for the alert before showing the alert.
+	 * 
+	 * @param alert       the message box to display
+	 * @param buttonTypes the type of buttons to show
+	 * @return An {@link Optional} that contains the result. Refer to the
+	 *         {@link Dialog} class documentation for more detail.
+	 */
+	public static Optional<ButtonType> showWithButtonsAndWait(final Alert alert, final ButtonType... buttonTypes) {
+		alert.getButtonTypes().setAll(buttonTypes);
+		return alert.showAndWait();
+	}
+
+	/**
 	 * Show a simple text message box with an OK button.
 	 *
 	 * @param owner   the owner window of the message box
@@ -53,12 +67,31 @@ public final class MessageBoxes {
 			final String title,
 			final Optional<String> header,
 			final String message) {
+		createMessageBoxOK(owner, title, header, message).showAndWait();
+	}
+
+	/**
+	 * Create a simple text message box with an OK button without showing it. <br/>
+	 * This method is ment to create a message box that can be further modified by
+	 * the requesting code.
+	 *
+	 * @param owner   the owner window of the message box
+	 * @param title   the text to be shown as the title
+	 * @param header  text to be shown as a header above the main message
+	 * @param message the text to be shown as the main message.
+	 * @return the message box created. This box is ready to be shown or you may
+	 *         change details before shoing it.
+	 */
+	public static Alert createMessageBoxOK(final Optional<Stage> owner,
+			final String title,
+			final Optional<String> header,
+			final String message) {
 		final Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setTitle(title);
 		header.ifPresent(alert::setHeaderText);
 		alert.setContentText(message);
 		enhance(owner, alert);
-		alert.showAndWait();
+		return alert;
 	}
 
 	/**
@@ -83,10 +116,27 @@ public final class MessageBoxes {
 	public static boolean showMessageBoxYesNo(final Optional<Stage> owner,
 			final Optional<String> header,
 			final String text) {
+		return createMessageBoxYesNo(owner, header, text).showAndWait().get() == ButtonType.YES;
+	}
+
+	/**
+	 * Create a message box with two buttons: YES and NO without showing it. <br/>
+	 * This method is ment to create a message box that can be further modified by
+	 * the requesting code.
+	 *
+	 * @param owner  the owner window of the message box
+	 * @param header text to be shown as a header above the main message
+	 * @param text   the question to be displayed to the user
+	 * @return the message box created. This box is ready to be shown or you may
+	 *         change details before shoing it.
+	 */
+	public static Alert createMessageBoxYesNo(final Optional<Stage> owner,
+			final Optional<String> header,
+			final String text) {
 		final Alert alert = new Alert(AlertType.CONFIRMATION, text, ButtonType.NO, ButtonType.YES);
 		header.ifPresent(alert::setHeaderText);
 		enhance(owner, alert);
-		return alert.showAndWait().get() == ButtonType.YES;
+		return alert;
 	}
 
 	/**
@@ -109,6 +159,26 @@ public final class MessageBoxes {
 	 * @param throwable the exception to be displayed to the user
 	 */
 	public static void showMessageBoxError(final Optional<Stage> owner,
+			final String text,
+			final String message,
+			final Throwable throwable) {
+		createMessageBoxError(owner, text, message, throwable).showAndWait();
+	}
+
+	/**
+	 * Create a message box that can display an error message to the user without
+	 * showing it. <br/>
+	 * This method is ment to create a message box that can be further modified by
+	 * the requesting code.
+	 *
+	 * @param owner     the owner window of the message box
+	 * @param text      the error message to be displayed to the user
+	 * @param message   an additional message describing the error
+	 * @param throwable the exception to be displayed to the user
+	 * @return the message box created. This box is ready to be shown or you may
+	 *         change details before shoing it.
+	 */
+	public static Alert createMessageBoxError(final Optional<Stage> owner,
 			final String text,
 			final String message,
 			final Throwable throwable) {
@@ -142,7 +212,7 @@ public final class MessageBoxes {
 		// Set expandable Exception into the dialog pane.
 		alert.getDialogPane().setExpandableContent(expContent);
 		enhance(owner, alert);
-		alert.showAndWait();
+		return alert;
 	}
 
 	/**
